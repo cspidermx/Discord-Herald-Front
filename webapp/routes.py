@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from webapp import app
 from webapp.forms import LoginForm
 from flask_login import current_user, login_user
-from webapp.models import User, Rules
+from webapp.models import User, Rules, Service
 from flask_login import logout_user
 from flask_login import login_required
 from flask import request
@@ -13,6 +13,40 @@ from email.message import EmailMessage
 import threading
 import smtplib
 from Crypto.Cipher import AES
+import random
+import string
+
+
+def id_generator(txt):
+        def rnddigits(size=6, chars=string.ascii_uppercase + string.digits):
+            return ''.join(random.choice(chars) for _ in range(size))
+        atras = random.randint(1, 9)
+        adelante = random.randint(1, 9)
+        return str(atras) + rnddigits(size=adelante) + txt + rnddigits(size=atras) + str(adelante)
+
+
+def id_unscrambler(txt):
+    atras = (int(txt[0]) + 1) * -1
+    adelante = int(txt[-1]) + 1
+    return txt[adelante:atras]
+
+
+def lock(set_as):
+    in_use = True
+    s = None
+    while in_use:
+        in_use = False
+        s = Service.query.first()
+        if s is not None:
+            if set_as:
+                in_use = s.in_use
+    if s is not None:
+        s.in_use = in_use
+        wappdb.session.commit()
+    else:
+        s = Service(id=1, stopped=False, in_use=in_use)
+        wappdb.session.add(s)
+        print(wappdb.session.commit())
 
 
 def send_async_email(app_, srv, msge):
@@ -49,21 +83,51 @@ def send_password_reset_email(usr):
 
 
 def decrypt_id(ctxt):
-    ctxt = request.values.get('deledit_rule').encode("ISO-8859-1")
+    # ctxt = request.values.get('deledit_rule').encode("ISO-8859-1")
     decryption_suite = AES.new(app.config['SECRET_KEY'].encode("ISO-8859-1"), AES.MODE_CBC,
                                iv=app.config['SECRET_IV'].encode("ISO-8859-1"))
     ptext = decryption_suite.decrypt(ctxt).decode("utf-8").strip()
     return ptext
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
+@app.route('/', defaults={'editid': None}, methods=['GET', 'POST'])
+@app.route('/<editid>', methods=['GET', 'POST'])
+@app.route('/index', defaults={'editid': None}, methods=['GET', 'POST'])
+@app.route('/index/<editid>', methods=['GET', 'POST'])
 @login_required
-def index():
+def index(editid):
     frmss = AddEditRule()
     rls = Rules.query.filter_by(id_user=current_user.id)
+    if editid is not None and not frmss.submit.data:
+        if editid != "#":
+            ruletoedit = Rules.query.filter_by(id=int(id_unscrambler(editid))).first()
+            frmss.ruleid.data = ruletoedit.enc_id()
+            frmss.twitterhandle.data = ruletoedit.handle
+            frmss.lookfor.data = ruletoedit.lookfor
+            frmss.hook.data = ruletoedit.discrobot
     if frmss.validate_on_submit():
-        pass
+        if frmss.ruleid.data == "":
+            newrule = Rules(id_user=current_user.id,
+                            handle=frmss.twitterhandle.data,
+                            lookfor=frmss.lookfor.data,
+                            discrobot=frmss.hook.data)
+            newrule.new_id()
+            lock(True)
+            wappdb.session.add(newrule)
+            print(wappdb.session.commit())
+            lock(False)
+            flash('New RULE has been saved.')
+        else:
+            cipher_text = frmss.ruleid.data.encode("ISO-8859-1")
+            plain_text = decrypt_id(cipher_text)
+            lock(True)
+            ruletoedit = Rules.query.filter_by(id=int(plain_text)).first()
+            ruletoedit.handle = frmss.twitterhandle.data
+            ruletoedit.lookfor = frmss.lookfor.data
+            ruletoedit.discrobot = frmss.hook.data
+            print(wappdb.session.commit())
+            lock(False)
+        return redirect(url_for('index'))
     return render_template('index.html', title='Home', form=frmss, rs=rls)
 
 
@@ -98,7 +162,8 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data,
+                    email=form.email.data)
         user.set_password(form.password.data)
         user.new_id()
         wappdb.session.add(user)
@@ -120,6 +185,8 @@ def usuarios():
 
 
 @app.route('/perfil/<username>', methods=['GET', 'POST'])
+@app.route('/perfil', defaults={'username': None}, methods=['GET', 'POST'])
+@app.route('/perfil/', defaults={'username': None}, methods=['GET', 'POST'])
 @login_required
 def perfil(username):
     if username != current_user.username and current_user.level != 0:
@@ -176,7 +243,7 @@ def editrule():
     if request.method == 'POST':
         cipher_text = request.values.get('deledit_rule').encode("ISO-8859-1")
         plain_text = decrypt_id(cipher_text)
-        print("Cifrado Edit: {} - Plain Edit: {}".format(cipher_text, plain_text))
+        return redirect(url_for('index') + '/' + id_generator(plain_text))
     return redirect(url_for('index'))
 
 
@@ -186,5 +253,10 @@ def deleterule():
     if request.method == 'POST':
         cipher_text = request.values.get('deledit_rule').encode("ISO-8859-1")
         plain_text = decrypt_id(cipher_text)
-        print("Cifrado Delete: {} - Plain Delete: {}".format(cipher_text, plain_text))
+        # print("Cifrado Delete: {} - Plain Delete: {}".format(cipher_text, plain_text))
+        r = Rules.query.filter_by(id=int(plain_text)).first()
+        lock(True)
+        wappdb.session.delete(r)
+        wappdb.session.commit()
+        lock(False)
     return redirect(url_for('index'))

@@ -18,6 +18,12 @@ def encript_id(id_txt):
     return cipher_text.decode("ISO-8859-1")
 
 
+class Service(wappdb.Model):
+    id = wappdb.Column(wappdb.Integer, primary_key=True)
+    stopped = wappdb.Column(wappdb.Boolean)
+    in_use = wappdb.Column(wappdb.Boolean)
+
+
 class Rules(wappdb.Model):
     id = wappdb.Column(wappdb.Integer, primary_key=True)
     id_user = wappdb.Column(wappdb.Integer, index=True)
@@ -27,6 +33,13 @@ class Rules(wappdb.Model):
 
     def enc_id(self):
         return encript_id(self.id)
+
+    def new_id(self):
+        mx = wappdb.session.query(func.max(Rules.id)).one()
+        if mx[0] is not None:
+            self.id = mx[0] + 1
+        else:
+            self.id = 1
 
 
 class User(UserMixin, wappdb.Model):
