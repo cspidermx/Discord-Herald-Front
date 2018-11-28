@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block styles %}
+{{super()}}
+    <!-- Custom Style -->
+    <link href="{{ url_for('static', filename='customstyles/custom.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block app_content %}
+    <h1>Hi, {{ current_user.username }}!</h1><BR>
+    <div class="row">
+        <div class="col-md-8">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+    <hr>
+    {% set i=0 %}
+    {% for rule in rs %}
+        {% set i=i+1 %}
+        <div class="rules">
+            <form action="/" method="POST" name="deleditForm{{ i }}">
+                <input type="Hidden" name="deledit_rule" value="{{ rule.enc_id() }}">
+            </form>
+            <p class="title">Rule #{{ i }}
+                <a href="#" title="Delete Rule" onclick="chgAction(document.getElementsByName('deleditForm{{ i }}')[0], '{{ url_for('deleterule') }}' );">
+                <img src="{{ url_for('static', filename='delete-button.png') }}" height="15"></a>
+                <a href="#" title="Edit Rule" onclick="chgAction(document.getElementsByName('deleditForm{{ i }}')[0], '{{ url_for('editrule') }}' );">
+                <img src="{{ url_for('static', filename='edit-button.png') }}" height="15"></a>
+            </p>
+            <div class="ruletext">
+                <pre>
+                    When <strong class="tweet">@{{ rule.handle }}</strong> tweets
+                    any of this keywords: <code class="words">{{ rule.lookfor }}</code>
+                    post to Discord using this webhook: <code class="hook">{{ rule.discrobot.split('/')[-1] }}</code>
+                </pre>
+            </div>
+            <br>
+        </div>
+    {% endfor %}
+    <hr>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script type="text/javascript" src="{{ url_for('static', filename='custom.js') }}"></script>
+{% endblock %}
