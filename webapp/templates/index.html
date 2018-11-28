@@ -8,8 +8,8 @@
 
 {% block app_content %}
     <h1>Hi, {{ current_user.username }}!</h1><BR>
-    <div class="row">
-        <div class="col-md-8">
+    <div class="row rules-form">
+        <div class="text-form">
             {{ wtf.quick_form(form) }}
         </div>
     </div>

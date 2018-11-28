@@ -108,9 +108,9 @@ def index(editid):
     if frmss.validate_on_submit():
         if frmss.ruleid.data == "":
             newrule = Rules(id_user=current_user.id,
-                            handle=frmss.twitterhandle.data,
-                            lookfor=frmss.lookfor.data,
-                            discrobot=frmss.hook.data)
+                            handle=str(frmss.twitterhandle.data).replace('@', '').strip(),
+                            lookfor=frmss.lookfor.data.strip(),
+                            discrobot=frmss.hook.data.strip())
             newrule.new_id()
             lock(True)
             wappdb.session.add(newrule)
@@ -122,9 +122,9 @@ def index(editid):
             plain_text = decrypt_id(cipher_text)
             lock(True)
             ruletoedit = Rules.query.filter_by(id=int(plain_text)).first()
-            ruletoedit.handle = frmss.twitterhandle.data
-            ruletoedit.lookfor = frmss.lookfor.data
-            ruletoedit.discrobot = frmss.hook.data
+            ruletoedit.handle = str(frmss.twitterhandle.data).replace('@', '')
+            ruletoedit.lookfor = frmss.lookfor.data.strip()
+            ruletoedit.discrobot = frmss.hook.data.strip()
             print(wappdb.session.commit())
             lock(False)
         return redirect(url_for('index'))

@@ -7,9 +7,10 @@ from webapp.models import User
 class AddEditRule(FlaskForm):
     ruleid = HiddenField('id')
     twitterhandle = StringField(label='When user @', validators=[DataRequired()],
-                                description="Write the full twitter handle this rule will listen to.")
+                                description="Write the full twitter handle this rule will listen to. "
+                                            "(Do not include the '@')")
     lookfor = StringField(label='Tweets any of this keywords', validators=[DataRequired()],
-                          description="Write any number of keywords, separated by comas (case sensitive field).")
+                          description="Write any number of keywords, separated by comas (This is case sensitive).")
     hook = StringField(label='Use this Webhook', validators=[DataRequired(), URL()],
                        description="Copy-Paste the full Discord webhook URL.")
     submit = SubmitField('Send')
