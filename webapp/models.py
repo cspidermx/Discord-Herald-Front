@@ -12,8 +12,9 @@ from Crypto.Cipher import AES
 def encript_id(id_txt):
     n = 16 - len(str(id_txt))
     string_val = "".join(" " for i in range(n)) + str(id_txt)
-    encryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
-    cipher_text = encryption_suite.encrypt(string_val)
+    encryption_suite = AES.new(app.config['SECRET_KEY'].encode("ISO-8859-1"), AES.MODE_CBC,
+                               iv=app.config['SECRET_IV'].encode("ISO-8859-1"))
+    cipher_text = encryption_suite.encrypt(string_val.encode("ISO-8859-1"))
     return cipher_text.decode("ISO-8859-1")
 
 

@@ -48,6 +48,14 @@ def send_password_reset_email(usr):
     send_email(smtpserver, msg)
 
 
+def decrypt_id(ctxt):
+    ctxt = request.values.get('deledit_rule').encode("ISO-8859-1")
+    decryption_suite = AES.new(app.config['SECRET_KEY'].encode("ISO-8859-1"), AES.MODE_CBC,
+                               iv=app.config['SECRET_IV'].encode("ISO-8859-1"))
+    ptext = decryption_suite.decrypt(ctxt).decode("utf-8").strip()
+    return ptext
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
@@ -167,8 +175,7 @@ def reset_password(token):
 def editrule():
     if request.method == 'POST':
         cipher_text = request.values.get('deledit_rule').encode("ISO-8859-1")
-        decryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
-        plain_text = decryption_suite.decrypt(cipher_text).decode("utf-8").strip()
+        plain_text = decrypt_id(cipher_text)
         print("Cifrado Edit: {} - Plain Edit: {}".format(cipher_text, plain_text))
     return redirect(url_for('index'))
 
@@ -178,7 +185,6 @@ def editrule():
 def deleterule():
     if request.method == 'POST':
         cipher_text = request.values.get('deledit_rule').encode("ISO-8859-1")
-        decryption_suite = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
-        plain_text = decryption_suite.decrypt(cipher_text).decode("utf-8").strip()
+        plain_text = decrypt_id(cipher_text)
         print("Cifrado Delete: {} - Plain Delete: {}".format(cipher_text, plain_text))
     return redirect(url_for('index'))

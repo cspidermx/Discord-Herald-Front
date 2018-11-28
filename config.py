@@ -5,7 +5,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class VarConfig(object):
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'nunca-lo-podras-adivinar'
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_IV = os.environ.get('SECRET_IV')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SMTP = {'user': os.environ['SMTP_USER'] or 'Usuario-de-SMTP',
             'password': os.environ['SMTP_PASS'] or 'Password-de-SMTP',
