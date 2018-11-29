@@ -1,3 +1,4 @@
+import os
 from flask import render_template, flash, redirect, url_for, request
 from webapp import app
 from webapp.forms import LoginForm
@@ -15,6 +16,7 @@ import smtplib
 from Crypto.Cipher import AES
 import random
 import string
+from flask import send_from_directory
 
 
 def id_generator(txt):
@@ -26,6 +28,7 @@ def id_generator(txt):
 
 
 def id_unscrambler(txt):
+    print(txt)
     atras = (int(txt[0]) + 1) * -1
     adelante = int(txt[-1]) + 1
     return txt[adelante:atras]
@@ -90,6 +93,12 @@ def decrypt_id(ctxt):
     return ptext
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
 @app.route('/', defaults={'editid': None}, methods=['GET', 'POST'])
 @app.route('/<editid>', methods=['GET', 'POST'])
 @app.route('/index', defaults={'editid': None}, methods=['GET', 'POST'])
@@ -99,7 +108,7 @@ def index(editid):
     frmss = AddEditRule()
     rls = Rules.query.filter_by(id_user=current_user.id)
     if editid is not None and not frmss.submit.data:
-        if editid != "#":
+        if editid != "#" and editid != 'favicon.ico':
             ruletoedit = Rules.query.filter_by(id=int(id_unscrambler(editid))).first()
             frmss.ruleid.data = ruletoedit.enc_id()
             frmss.twitterhandle.data = ruletoedit.handle

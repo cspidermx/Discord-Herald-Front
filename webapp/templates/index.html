@@ -9,7 +9,7 @@
 {% block app_content %}
     <h1>Hi, {{ current_user.username }}!</h1><BR>
     <div class="row rules-form">
-        <div class="text-form">
+        <div class="text-form .form-control-sm">
             {{ wtf.quick_form(form) }}
         </div>
     </div>
