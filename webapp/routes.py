@@ -281,6 +281,7 @@ def dltusr(iduser):
     if current_user.level != 0:
         return redirect(url_for('index'))
     usr = User.query.filter_by(id=iduser).first()
+    lock(True)
     if usr is not None:
         rls = Rules.query.filter_by(id=iduser).all()
         if len(rls) != 0:
@@ -294,4 +295,5 @@ def dltusr(iduser):
             wappdb.session.commit()
         wappdb.session.delete(usr)
         wappdb.session.commit()
+    lock(False)
     return redirect(url_for('usuarios'))
