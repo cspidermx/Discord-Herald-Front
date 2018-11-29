@@ -13,3 +13,11 @@ function chgAction(to_change, action_name )
         to_change.submit();
     }
 }
+
+
+function supr(url)
+{
+    if (confirm("Are you sure you want to delete this user?")){
+        window.location.replace(url);
+    }
+}

@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for, request
 from webapp import app
 from webapp.forms import LoginForm
 from flask_login import current_user, login_user
-from webapp.models import User, Rules, Service
+from webapp.models import User, Rules, Service, Since
 from flask_login import logout_user
 from flask_login import login_required
 from flask import request
@@ -28,7 +28,6 @@ def id_generator(txt):
 
 
 def id_unscrambler(txt):
-    print(txt)
     atras = (int(txt[0]) + 1) * -1
     adelante = int(txt[-1]) + 1
     return txt[adelante:atras]
@@ -198,9 +197,10 @@ def usuarios():
 @app.route('/perfil/', defaults={'username': None}, methods=['GET', 'POST'])
 @login_required
 def perfil(username):
-    if username != current_user.username and current_user.level != 0:
+    username = id_unscrambler(username)
+    if username != current_user.id and current_user.level != 0:
         return redirect(url_for('index'))
-    usr = User.query.filter_by(username=username).first_or_404()
+    usr = User.query.filter_by(id=username).first_or_404()
     frm = EditProfileForm(usr.username, usr.email)
     frm.username.id = usr.username
     frm.email.id = usr.email
@@ -269,3 +269,29 @@ def deleterule():
         wappdb.session.commit()
         lock(False)
     return redirect(url_for('index'))
+
+
+@app.route('/dltusr/<iduser>', methods=['GET', 'POST'])
+@app.route('/dltusr', defaults={'iduser': None}, methods=['GET', 'POST'])
+@app.route('/dltusr/', defaults={'iduser': None}, methods=['GET', 'POST'])
+@login_required
+def dltusr(iduser):
+    cipher_text = iduser.encode("ISO-8859-1")
+    iduser = decrypt_id(cipher_text)
+    if current_user.level != 0:
+        return redirect(url_for('index'))
+    usr = User.query.filter_by(id=iduser).first()
+    if usr is not None:
+        rls = Rules.query.filter_by(id=iduser).all()
+        if len(rls) != 0:
+            for r in rls:
+                since = Since.query.filter_by(rule_id=r.id).all()
+                if len(since) != 0:
+                    for s in since:
+                        wappdb.session.delete(s)
+                    wappdb.session.commit()
+                wappdb.session.delete(r)
+            wappdb.session.commit()
+        wappdb.session.delete(usr)
+        wappdb.session.commit()
+    return redirect(url_for('usuarios'))

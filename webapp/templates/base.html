@@ -1,12 +1,14 @@
 {% extends 'bootstrap/base.html' %}
-
+{% block head %}
+    {{super()}}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+{% endblock %}
 {% block title %}
     {% if title %}
         {{ title }} - WebApp
     {% else %}
         Twitter-Discord Herald
     {% endif %}
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 {% endblock %}
 
 {% block navbar %}

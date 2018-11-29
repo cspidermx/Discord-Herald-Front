@@ -13,4 +13,4 @@ class VarConfig(object):
             'server': os.environ['SMTP_SRV'] or 'Servidor-de-SMTP',
             'port': os.environ['SMTP_PORT'] or 'Puerto-de-SMTP',
             'SSL': os.environ['SMTP_SSL'] or 'SSL-de-SMTP'}
-    SEND_FILE_MAX_AGE_DEFAULT = os.environ.get('SEND_FILE_MAX_AGE_DEFAULT')
+    SEND_FILE_MAX_AGE_DEFAULT = int(os.environ.get('SEND_FILE_MAX_AGE_DEFAULT'))

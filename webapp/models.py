@@ -24,6 +24,11 @@ class Service(wappdb.Model):
     in_use = wappdb.Column(wappdb.Boolean)
 
 
+class Since(wappdb.Model):
+    rule_id = wappdb.Column(wappdb.Integer, primary_key=True)
+    idsince = wappdb.Column(wappdb.String, primary_key=True)
+
+
 class Rules(wappdb.Model):
     id = wappdb.Column(wappdb.Integer, primary_key=True)
     id_user = wappdb.Column(wappdb.Integer, index=True)
@@ -48,6 +53,9 @@ class User(UserMixin, wappdb.Model):
     email = wappdb.Column(wappdb.String(120), index=True, unique=True)
     password_hash = wappdb.Column(wappdb.String(128))
     level = wappdb.Column(wappdb.Integer)
+
+    def enc_id(self):
+        return encript_id(self.id)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

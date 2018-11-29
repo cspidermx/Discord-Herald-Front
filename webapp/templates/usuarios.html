@@ -12,8 +12,19 @@
 		<tr>
             <td>{{ usrs.username }}</td>
             <td><a href="mailto:{{ usrs.email }}">{{ usrs.email }}</a></td>
-            <td><a href="{{ url_for('perfil', username=usrs.username) }}">Edit Profile</a></td>
+            <td><a href="{{ url_for('perfil', username=usrs.enc_id()) }}">Edit Profile</a></td>
+			<td>
+			{% if usrs.level != 0 %}
+			<a href="#" title="Delete User" onclick="supr('{{ url_for('dltusr', iduser=usrs.enc_id()) }}');">
+				<img src="{{ url_for('static', filename='delete-button.png') }}" height="15"></a>
+			{% endif %}
+			</td>
 		</tr>
 	{% endfor %}
 </table>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script type="text/javascript" src="{{ url_for('static', filename='customjs/custom.js') }}"></script>
 {% endblock %}
