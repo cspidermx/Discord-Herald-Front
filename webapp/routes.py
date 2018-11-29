@@ -137,7 +137,7 @@ def index(editid):
             print(wappdb.session.commit())
             lock(False)
         return redirect(url_for('index'))
-    return render_template('index.html', title='Home', form=frmss, rs=rls)
+    return render_template('index.html', title='Discord Herald Home', form=frmss, rs=rls)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -158,7 +158,7 @@ def login():
             return redirect(next_page)
     elif frm_lgin.submit2.data:
         return redirect(url_for('register'))
-    return render_template('login.html', title='Ingreso', form=frm_lgin)
+    return render_template('login.html', title='Discord Herald Login', form=frm_lgin)
 
 
 @app.route('/logout')
@@ -180,7 +180,7 @@ def register():
         flash('New user has been registered.')
         login_user(user, remember=False)
         return redirect(url_for('index'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Discord Herald Registration', form=form)
 
 
 @app.route('/usuarios')
@@ -227,7 +227,7 @@ def reset_password_request():
             send_password_reset_email(user)
         flash('Check your email for the instructions to reset your password')
         return redirect(url_for('login'))
-    return render_template('reset_password_request.html', title='Restablecer Password', form=form)
+    return render_template('reset_password_request.html', title='Discord Herald Reset Password', form=form)
 
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
