@@ -34,7 +34,7 @@
                         {% if current_user.level == 0 %}
 		                    <li><a href="{{ url_for('usuarios') }}">Users</a></li>
                         {% endif %}
-                        <li><a href="{{ url_for('perfil', username=current_user.username) }}">Profile</a></li>
+                        <li><a href="{{ url_for('perfil', username=current_user.enc_id()) }}">Profile</a></li>
                         <li><a href="{{ url_for('logout') }}">Logout</a></li>
                     {% endif %}
                 </ul>

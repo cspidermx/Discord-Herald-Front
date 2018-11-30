@@ -197,7 +197,8 @@ def usuarios():
 @app.route('/perfil/', defaults={'username': None}, methods=['GET', 'POST'])
 @login_required
 def perfil(username):
-    username = id_unscrambler(username)
+    cipher_text = username.encode("ISO-8859-1")
+    username = decrypt_id(cipher_text)
     if username != current_user.id and current_user.level != 0:
         return redirect(url_for('index'))
     usr = User.query.filter_by(id=username).first_or_404()
@@ -211,7 +212,7 @@ def perfil(username):
         # if frm.oldpassword != "":
         user.set_password(frm.newpassword.data)
         wappdb.session.commit()
-        flash('Actualización completada con éxito.')
+        flash('Update successful.')
         return redirect(url_for('usuarios'))
     return render_template('perfil.html', user=usr, form=frm)
 
