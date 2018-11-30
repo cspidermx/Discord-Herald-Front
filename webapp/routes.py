@@ -1,5 +1,5 @@
 import os
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for
 from webapp import app
 from webapp.forms import LoginForm
 from flask_login import current_user, login_user
@@ -202,6 +202,7 @@ def perfil(username):
     if username != current_user.id and current_user.level != 0:
         return redirect(url_for('index'))
     usr = User.query.filter_by(id=username).first_or_404()
+    rls = Rules.query.filter_by(id_user=usr.id)
     frm = EditProfileForm(usr.username, usr.email)
     frm.username.id = usr.username
     frm.email.id = usr.email
@@ -214,7 +215,7 @@ def perfil(username):
         wappdb.session.commit()
         flash('Update successful.')
         return redirect(url_for('usuarios'))
-    return render_template('perfil.html', user=usr, form=frm)
+    return render_template('perfil.html', user=usr, form=frm, rs=rls)
 
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])

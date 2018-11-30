@@ -7,6 +7,7 @@ import jwt
 from webapp import app
 from sqlalchemy.sql.expression import func
 from Crypto.Cipher import AES
+import requests
 
 
 def encript_id(id_txt):
@@ -45,6 +46,11 @@ class Rules(wappdb.Model):
             self.id = mx[0] + 1
         else:
             self.id = 1
+
+    def hook_name(self):
+        url = self.discrobot
+        r = requests.get(url)
+        return r.json()['name']
 
 
 class User(UserMixin, wappdb.Model):

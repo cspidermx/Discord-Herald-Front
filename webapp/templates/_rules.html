@@ -1,0 +1,21 @@
+<div class="rules">
+    <form action="/" method="POST" name="deleditForm{{ i }}">
+        <input type="Hidden" name="deledit_rule" value="{{ rule.enc_id() }}">
+    </form>
+    <p class="title">Rule #{{ i }}
+        {% if calling_page == 'index.html' %}
+            <a href="#" title="Delete Rule" onclick="chgAction(document.getElementsByName('deleditForm{{ i }}')[0], '{{ url_for('deleterule') }}' );">
+            <img src="{{ url_for('static', filename='delete-button.png') }}" height="15"></a>
+            <a href="#" title="Edit Rule" onclick="chgAction(document.getElementsByName('deleditForm{{ i }}')[0], '{{ url_for('editrule') }}' );">
+            <img src="{{ url_for('static', filename='edit-button.png') }}" height="15"></a>
+        {% endif %}
+    </p>
+    <div class="ruletext">
+        <!--<pre>-->
+            When <strong class="tweet">@{{ rule.handle }}</strong> tweets <BR>
+            any of this keywords: <code class="words">{{ rule.lookfor }}</code> <BR>
+            post to Discord using this webhook: <span class="hook">{{ rule.hook_name() }}</span> <BR>
+        <!--</pre>-->
+    </div>
+    <br>
+</div>

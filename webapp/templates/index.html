@@ -8,36 +8,23 @@
 
 {% block app_content %}
     <h1>Hi, {{ current_user.username }}!</h1><BR>
-    <div class="row rules-form">
-        <div class="text-form .form-control-sm">
-            {{ wtf.quick_form(form) }}
+    <div class="row">
+        <div class="col-md-6 rules-form">
+            <div class="text-form .form-control-sm">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+        <div class="col-md-5">
+            <hr>
+            {% set calling_page = self._TemplateReference__context.name %}
+            {% set i=0 %}
+            {% for rule in rs %}
+                {% set i=i+1 %}
+                {% include '_rules.html' %}
+            {% endfor %}
+            <hr>
         </div>
     </div>
-    <hr>
-    {% set i=0 %}
-    {% for rule in rs %}
-        {% set i=i+1 %}
-        <div class="rules">
-            <form action="/" method="POST" name="deleditForm{{ i }}">
-                <input type="Hidden" name="deledit_rule" value="{{ rule.enc_id() }}">
-            </form>
-            <p class="title">Rule #{{ i }}
-                <a href="#" title="Delete Rule" onclick="chgAction(document.getElementsByName('deleditForm{{ i }}')[0], '{{ url_for('deleterule') }}' );">
-                <img src="{{ url_for('static', filename='delete-button.png') }}" height="15"></a>
-                <a href="#" title="Edit Rule" onclick="chgAction(document.getElementsByName('deleditForm{{ i }}')[0], '{{ url_for('editrule') }}' );">
-                <img src="{{ url_for('static', filename='edit-button.png') }}" height="15"></a>
-            </p>
-            <div class="ruletext">
-                <pre>
-                    When <strong class="tweet">@{{ rule.handle }}</strong> tweets
-                    any of this keywords: <code class="words">{{ rule.lookfor }}</code>
-                    post to Discord using this webhook: <code class="hook">{{ rule.discrobot.split('/')[-1] }}</code>
-                </pre>
-            </div>
-            <br>
-        </div>
-    {% endfor %}
-    <hr>
 {% endblock %}
 
 {% block scripts %}

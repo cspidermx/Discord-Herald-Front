@@ -11,6 +11,7 @@
 .ruletext {
     width: auto;
     background-color: #fff;
+    padding: 10px 10px 10px 30px;
     border-left: 8px solid #504caf;
     word-wrap: break-word;
 	font-size: 16px;
@@ -50,7 +51,8 @@
 }
 
 .hook {
-	font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Black", "sans-serif";
+	font-family: 'Palatino';
     font-size: 15px;
-	color: rgb(35,31,32);
+	color: rgb(195, 0, 255, 1);
+	font-weight: bold;
 }

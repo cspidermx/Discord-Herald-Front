@@ -21,3 +21,6 @@ function supr(url)
         window.location.replace(url);
     }
 }
+
+
+
