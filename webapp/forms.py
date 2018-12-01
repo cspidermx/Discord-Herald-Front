@@ -12,7 +12,10 @@ class AddEditRule(FlaskForm):
     lookfor = StringField(label='Tweets any of this keywords', validators=[DataRequired()],
                           description="Write any number of keywords, separated by comas (This is case sensitive).")
     hook = StringField(label='Use this Webhook', validators=[DataRequired(), URL()],
-                       description="Copy-Paste the full Discord webhook URL.")
+                       description="Copy-Paste the full "
+                                   "<a href='https://support.discordapp.com/hc/en-us/articles/"
+                                   "228383668-Intro-to-Webhooks' class='hooklink' "
+                                   "target='_blank'>Discord Webhook</a> URL.")
     submit = SubmitField('Send')
 
 

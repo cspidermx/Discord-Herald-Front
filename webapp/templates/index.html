@@ -10,16 +10,21 @@
     <h1>Hi, {{ current_user.username }}!</h1><BR>
     {% if current_user.level == 0 %}
         <div class="row">
-             <p class = "col-md-6 rules-form">
-                 <strong>El servicio esta:</strong>
+            <div  class="col-md-6 rules-form">
+                <div class = "text-form">
+                <strong class="servicetitle">El servicio esta:</strong>
                 {% if not serv.stopped %}
-                    <a href="#" onclick="confirmstartstop('{{ url_for('startstop', set_as='stop') }}');">
-                                        <img src="{{ url_for('static', filename='Encendido.jpg') }}"></a>
+                    {% set st = 'stop' %}
+                    {% set fname = 'Encendido.jpg' %}
                 {% else %}
-                    <a href="#" onclick="confirmstartstop('{{ url_for('startstop', set_as='start') }}');">
-                                        <img src="{{ url_for('static', filename='Apagado.jpg') }}"></a>
+                    {% set st = 'start' %}}
+                    {% set fname = 'Apagado.jpg' %}
                 {% endif %}
-             </p>
+                    <a href="#" onclick="confirmstartstop('{{ url_for('startstop', set_as=st) }}');">
+                                        <img src="{{ url_for('static', filename=fname) }}"
+                                        style="padding-left:3em"></a>
+                </div>
+            </div>
         </div>
     {% endif %}
     <div class="row">

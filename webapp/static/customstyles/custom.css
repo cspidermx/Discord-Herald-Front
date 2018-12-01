@@ -44,6 +44,11 @@
 	color: rgb(56,161,243);
 }
 
+.servicetitle {
+    font-family: Helvetica, Arial;
+    font-size: 20px;
+	color: rgb(56, 114, 243);
+}
 .words {
 	font-family: Segoe, 'Segoe UI', 'DejaVu Sans', 'Trebuchet MS', Verdana, 'sans-serif';
     font-size: 15px;
@@ -56,3 +61,14 @@
 	color: rgb(195, 0, 255, 1);
 	font-weight: bold;
 }
+
+/* Every link that has class ".ThisClass" will have: */
+a.hooklink {
+	font-family: 'Palatino';
+    font-size: 15px;
+	color: #7289da;
+	font-weight: bold;
+	text-decoration: underline;
+}
+a.hooklink:hover { color: #dac372; }
+a.hooklink:visited { color: #7289da; }
