@@ -92,6 +92,16 @@ def decrypt_id(ctxt):
     return ptext
 
 
+def readstatus():
+    try:
+        ser = Service.query.one()
+    except:
+        ser = Service(id=1, stopped=False, in_use=False)
+        wappdb.session.add(ser)
+        wappdb.session.commit()
+    return ser
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
@@ -104,6 +114,7 @@ def favicon():
 @app.route('/index/<editid>', methods=['GET', 'POST'])
 @login_required
 def index(editid):
+    s = readstatus()
     frmss = AddEditRule()
     rls = Rules.query.filter_by(id_user=current_user.id)
     if editid is not None and not frmss.submit.data:
@@ -136,7 +147,7 @@ def index(editid):
             print(wappdb.session.commit())
             lock(False)
         return redirect(url_for('index'))
-    return render_template('index.html', title='Discord Herald Home', form=frmss, rs=rls)
+    return render_template('index.html', title='Discord Herald Home', form=frmss, rs=rls, serv=s)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -210,7 +221,6 @@ def perfil(username):
         user = User.query.filter_by(username=frm.original_username).first()
         user.username = frm.username.data
         user.email = frm.email.data
-        # if frm.oldpassword != "":
         user.set_password(frm.newpassword.data)
         wappdb.session.commit()
         flash('Update successful.')
@@ -266,10 +276,11 @@ def deleterule():
         plain_text = decrypt_id(cipher_text)
         # print("Cifrado Delete: {} - Plain Delete: {}".format(cipher_text, plain_text))
         r = Rules.query.filter_by(id=int(plain_text)).first()
-        lock(True)
-        wappdb.session.delete(r)
-        wappdb.session.commit()
-        lock(False)
+        if current_user.id == r.id_user:
+            lock(True)
+            wappdb.session.delete(r)
+            wappdb.session.commit()
+            lock(False)
     return redirect(url_for('index'))
 
 
@@ -278,24 +289,40 @@ def deleterule():
 @app.route('/dltusr/', defaults={'iduser': None}, methods=['GET', 'POST'])
 @login_required
 def dltusr(iduser):
-    cipher_text = iduser.encode("ISO-8859-1")
-    iduser = decrypt_id(cipher_text)
-    if current_user.level != 0:
-        return redirect(url_for('index'))
-    usr = User.query.filter_by(id=iduser).first()
-    lock(True)
-    if usr is not None:
-        rls = Rules.query.filter_by(id=iduser).all()
-        if len(rls) != 0:
-            for r in rls:
-                since = Since.query.filter_by(rule_id=r.id).all()
-                if len(since) != 0:
-                    for s in since:
-                        wappdb.session.delete(s)
-                    wappdb.session.commit()
-                wappdb.session.delete(r)
+    if current_user.level == 0:
+        cipher_text = iduser.encode("ISO-8859-1")
+        iduser = decrypt_id(cipher_text)
+        if current_user.level != 0:
+            return redirect(url_for('index'))
+        usr = User.query.filter_by(id=iduser).first()
+        lock(True)
+        if usr is not None:
+            rls = Rules.query.filter_by(id=iduser).all()
+            if len(rls) != 0:
+                for r in rls:
+                    since = Since.query.filter_by(rule_id=r.id).all()
+                    if len(since) != 0:
+                        for s in since:
+                            wappdb.session.delete(s)
+                        wappdb.session.commit()
+                    wappdb.session.delete(r)
+                wappdb.session.commit()
+            wappdb.session.delete(usr)
             wappdb.session.commit()
-        wappdb.session.delete(usr)
-        wappdb.session.commit()
-    lock(False)
+        lock(False)
     return redirect(url_for('usuarios'))
+
+
+@app.route('/startstop/<set_as>', methods=['GET', 'POST'])
+@app.route('/startstop', defaults={'set_as': None}, methods=['GET', 'POST'])
+@app.route('/startstop/', defaults={'set_as': None}, methods=['GET', 'POST'])
+@login_required
+def startstop(set_as):
+    if current_user.level == 0 and set_as is not None:
+        s = readstatus()
+        if set_as == 'stop':
+            s.stopped = True
+        else:
+            s.stopped = False
+        wappdb.session.commit()
+    return redirect(url_for('index'))

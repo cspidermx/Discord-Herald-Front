@@ -8,6 +8,20 @@
 
 {% block app_content %}
     <h1>Hi, {{ current_user.username }}!</h1><BR>
+    {% if current_user.level == 0 %}
+        <div class="row">
+             <p class = "col-md-6 rules-form">
+                 <strong>El servicio esta:</strong>
+                {% if not serv.stopped %}
+                    <a href="#" onclick="confirmstartstop('{{ url_for('startstop', set_as='stop') }}');">
+                                        <img src="{{ url_for('static', filename='Encendido.jpg') }}"></a>
+                {% else %}
+                    <a href="#" onclick="confirmstartstop('{{ url_for('startstop', set_as='start') }}');">
+                                        <img src="{{ url_for('static', filename='Apagado.jpg') }}"></a>
+                {% endif %}
+             </p>
+        </div>
+    {% endif %}
     <div class="row">
         <div class="col-md-6 rules-form">
             <div class="text-form .form-control-sm">

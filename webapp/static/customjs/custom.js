@@ -23,4 +23,12 @@ function supr(url)
 }
 
 
+function confirmstartstop(url)
+{
+    if (confirm("Confirmation required...")){
+        window.location.replace(url);
+    }
+}
+
+
 
