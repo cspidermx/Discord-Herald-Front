@@ -13,7 +13,29 @@
     <hr>
     <div class="row">
         <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
+            <form action = "" method = post class="form" role="form">
+                <fieldset>
+                    {{ form.hidden_tag() }}
+                        <div class="form-group  required">
+                           {{ form.username.label(class="control-label") }}<br>
+                           {{ form.username(value=user.username, class="form-control") }}
+                           <br>
+                           {{ form.email.label(class="control-label") }}<br>
+                           {{ form.email(value=user.email, class="form-control") }}
+                        </div>
+                       <br>
+                       {{ form.oldpassword.label(class="control-label") }}<br>
+                       {{ form.oldpassword(class="form-control") }}
+                       <br>
+                       {{ form.newpassword.label(class="control-label") }}<br>
+                       {{ form.newpassword(class="form-control") }}
+                       <br>
+                       {{ form.newpassword2.label(class="control-label") }}<br>
+                       {{ form.newpassword2(class="form-control") }}
+                       <br>
+                       {{ form.submit(class="btn btn-default") }}
+                </fieldset>
+            </form>
         </div>
         <div class="col-md-7">
             {% if current_user.level == 0 %}

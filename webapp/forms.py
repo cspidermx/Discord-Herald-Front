@@ -59,7 +59,7 @@ class RegistrationForm(FlaskForm):
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired()])
-    # oldpassword = PasswordField('Previous Password')
+    oldpassword = PasswordField('Previous Password')
     newpassword = PasswordField('New Password')
     newpassword2 = PasswordField('Repeat New Password', validators=[EqualTo('newpassword')])
     submit = SubmitField('Send')
@@ -67,9 +67,9 @@ class EditProfileForm(FlaskForm):
     def __init__(self, original_username, original_email, *args, **kwargs):
         super(EditProfileForm, self).__init__(*args, **kwargs)
         self.original_username = original_username
-        self.username.data = original_username
+        # self.username.data = original_username
         self.original_email = original_email
-        self.email.data = original_email
+        # self.email.data = original_email
 
     def validate_username(self, username):
         if username.data != self.original_username:
