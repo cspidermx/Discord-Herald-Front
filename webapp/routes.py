@@ -221,7 +221,8 @@ def perfil(username):
         user = User.query.filter_by(username=frm.original_username).first()
         user.username = frm.username.data
         user.email = frm.email.data
-        user.set_password(frm.newpassword.data)
+        if frm.oldpassword.data != '':
+            user.set_password(frm.newpassword.data)
         wappdb.session.commit()
         flash('Update successful.')
         return redirect(url_for('index'))
