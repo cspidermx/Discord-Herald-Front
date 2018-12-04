@@ -186,7 +186,7 @@ def register():
         user.set_password(form.password.data)
         user.new_id()
         wappdb.session.add(user)
-        print(wappdb.session.commit())
+        wappdb.session.commit()
         flash('New user has been registered.')
         login_user(user, remember=False)
         return redirect(url_for('index'))
@@ -210,7 +210,7 @@ def usuarios():
 def perfil(username):
     cipher_text = username.encode("ISO-8859-1")
     username = decrypt_id(cipher_text)
-    if username != current_user.id and current_user.level != 0:
+    if not (str(username) == str(current_user.id) or str(current_user.level) == '0'):
         return redirect(url_for('index'))
     usr = User.query.filter_by(id=username).first_or_404()
     rls = Rules.query.filter_by(id_user=usr.id)
@@ -224,7 +224,7 @@ def perfil(username):
         user.set_password(frm.newpassword.data)
         wappdb.session.commit()
         flash('Update successful.')
-        return redirect(url_for('usuarios'))
+        return redirect(url_for('index'))
     return render_template('perfil.html', user=usr, form=frm, rs=rls)
 
 
