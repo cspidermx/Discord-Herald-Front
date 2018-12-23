@@ -71,7 +71,7 @@ def send_password_reset_email(usr):
     smtpserver = app.config['SMTP']
 
     msg = EmailMessage()
-    msg['Subject'] = "Restablecer Password - Robot Email"
+    msg['Subject'] = "Reset Password - Discord Herald"
     msg['From'] = smtpserver['user']
     msg['To'] = usr.email
     msg.set_type('text/html')
