@@ -11,10 +11,12 @@
         {% endif %}
     </p>
     <div class="ruletext">
+        {% set media = {'2': 'Images and GIFs', '1i': 'Images (but NOT Videos/GIFs)', '1g': 'Videos/GIFs (but NOT Images)', '0':'No Media'} %}
         <!--<pre>-->
-            When <strong class="tweet">@{{ rule.handle }}</strong> tweets <BR>
-            any of this keywords: <code class="words">{{ rule.lookfor }}</code> <BR>
-            post to Discord using this webhook: <span class="hook">{{ rule.hook_name() }}</span> <BR>
+            When user <strong class="tweet">@{{ rule.handle }}</strong> <BR>
+            Tweets any of this keywords: <code class="words">{{ rule.lookfor }}</code> <BR>
+            Post to Discord using this webhook: <span class="hook">{{ rule.hook_name() }}</span> <BR>
+            Including: <span class="tweet">{{ media[rule.media] }}</span> <BR>
         <!--</pre>-->
     </div>
     <br>

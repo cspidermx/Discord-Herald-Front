@@ -30,12 +30,20 @@ class Since(wappdb.Model):
     idsince = wappdb.Column(wappdb.String, primary_key=True)
 
 
+class Usedata(wappdb.Model):
+    id = wappdb.Column(wappdb.String, primary_key=True)
+    rule_id = wappdb.Column(wappdb.Integer)
+    stamp = wappdb.Column(wappdb.String)
+    trigger_text = wappdb.Column(wappdb.String)
+
+
 class Rules(wappdb.Model):
     id = wappdb.Column(wappdb.Integer, primary_key=True)
-    id_user = wappdb.Column(wappdb.Integer, index=True)
-    handle = wappdb.Column(wappdb.String, index=True)
-    lookfor = wappdb.Column(wappdb.String, index=True)
-    discrobot = wappdb.Column(wappdb.String, index=True)
+    id_user = wappdb.Column(wappdb.Integer)
+    handle = wappdb.Column(wappdb.String)
+    lookfor = wappdb.Column(wappdb.String)
+    discrobot = wappdb.Column(wappdb.String)
+    media = wappdb.Column(wappdb.String)
 
     def enc_id(self):
         return encript_id(self.id)

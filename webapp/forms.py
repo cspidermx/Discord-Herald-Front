@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, StopValidation, URL
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectField
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, URL
 from webapp.models import User
 
 
@@ -16,6 +16,9 @@ class AddEditRule(FlaskForm):
                                    "<a href='https://support.discordapp.com/hc/en-us/articles/"
                                    "228383668-Intro-to-Webhooks' class='hooklink' "
                                    "target='_blank'>Discord Webhook</a> URL.")
+    media = SelectField(label='Include Media',
+                        choices=[('2', 'Images and Videos/GIFs'), ('1i', 'Images'), ('1g', 'Videos/GIFs'),
+                                 ('0', 'None')])
     submit = SubmitField('Send')
 
 

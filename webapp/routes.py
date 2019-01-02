@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for
 from webapp import app
 from webapp.forms import LoginForm
 from flask_login import current_user, login_user
-from webapp.models import User, Rules, Service, Since
+from webapp.models import User, Rules, Service, Since, Usedata
 from flask_login import logout_user
 from flask_login import login_required
 from flask import request
@@ -116,7 +116,7 @@ def favicon():
 def index(editid):
     s = readstatus()
     frmss = AddEditRule()
-    rls = Rules.query.filter_by(id_user=current_user.id)
+    rls = Rules.query.filter_by(id_user=current_user.id).order_by(Rules.id.desc()).all()
     if editid is not None and not frmss.submit.data:
         if editid != "#" and editid != 'favicon.ico':
             ruletoedit = Rules.query.filter_by(id=int(id_unscrambler(editid))).first()
@@ -124,12 +124,14 @@ def index(editid):
             frmss.twitterhandle.data = ruletoedit.handle
             frmss.lookfor.data = ruletoedit.lookfor
             frmss.hook.data = ruletoedit.discrobot
+            frmss.media.data = ruletoedit.media
     if frmss.validate_on_submit():
         if frmss.ruleid.data == "":
             newrule = Rules(id_user=current_user.id,
                             handle=str(frmss.twitterhandle.data).replace('@', '').strip(),
                             lookfor=frmss.lookfor.data.strip(),
-                            discrobot=frmss.hook.data.strip())
+                            discrobot=frmss.hook.data.strip(),
+                            media=frmss.media.data)
             newrule.new_id()
             lock(True)
             wappdb.session.add(newrule)
@@ -144,6 +146,7 @@ def index(editid):
             ruletoedit.handle = str(frmss.twitterhandle.data).replace('@', '')
             ruletoedit.lookfor = frmss.lookfor.data.strip()
             ruletoedit.discrobot = frmss.hook.data.strip()
+            ruletoedit.media = frmss.media.data
             print(wappdb.session.commit())
             lock(False)
         return redirect(url_for('index'))
@@ -277,8 +280,17 @@ def deleterule():
         plain_text = decrypt_id(cipher_text)
         # print("Cifrado Delete: {} - Plain Delete: {}".format(cipher_text, plain_text))
         r = Rules.query.filter_by(id=int(plain_text)).first()
+        ud = Usedata.query.filter_by(rule_id=int(plain_text)).all()
+        sn = Since.query.filter_by(rule_id=int(plain_text)).first()
         if current_user.id == r.id_user:
             lock(True)
+            if len(ud) > 0:
+                for usage in ud:
+                    wappdb.session.delete(usage)
+            wappdb.session.commit()
+            if sn is not None:
+                wappdb.session.delete(sn)
+            wappdb.session.commit()
             wappdb.session.delete(r)
             wappdb.session.commit()
             lock(False)
@@ -298,7 +310,7 @@ def dltusr(iduser):
         usr = User.query.filter_by(id=iduser).first()
         lock(True)
         if usr is not None:
-            rls = Rules.query.filter_by(id=iduser).all()
+            rls = Rules.query.filter_by(id_user=iduser).all()
             if len(rls) != 0:
                 for r in rls:
                     since = Since.query.filter_by(rule_id=r.id).all()
@@ -306,8 +318,13 @@ def dltusr(iduser):
                         for s in since:
                             wappdb.session.delete(s)
                         wappdb.session.commit()
+                    ud = Usedata.query.filter_by(rule_id=r.id).all()
+                    if len(ud) > 0:
+                        for usage in ud:
+                            wappdb.session.delete(usage)
+                    wappdb.session.commit()
                     wappdb.session.delete(r)
-                wappdb.session.commit()
+                    wappdb.session.commit()
             wappdb.session.delete(usr)
             wappdb.session.commit()
         lock(False)

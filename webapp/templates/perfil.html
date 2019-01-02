@@ -43,7 +43,7 @@
                 {% set calling_page = self._TemplateReference__context.name %}
                 {% set i=0 %}
                 {% for rule in rs %}
-                    {% set i=i+1 %}
+                    {% set i=loop.index %}
                     {% include '_rules.html' %}
                 {% endfor %}
                 <hr>
