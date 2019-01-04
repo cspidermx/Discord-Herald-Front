@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, URL
 from webapp.models import User
 
@@ -9,16 +9,21 @@ class AddEditRule(FlaskForm):
     twitterhandle = StringField(label='When user @', validators=[DataRequired()],
                                 description="Write the full twitter handle this rule will listen to. "
                                             "(Do not include the '@')")
-    lookfor = StringField(label='Tweets any of this keywords', validators=[DataRequired()],
-                          description="Write any number of keywords, separated by comas (This is case sensitive).")
+    lookfor = StringField(label='Tweets any of this keywords or phrases', validators=[DataRequired()],
+                          description="Write any number of keywords, separated by comas "
+                                      "(This is case sensitive and precise).")
     hook = StringField(label='Use this Webhook', validators=[DataRequired(), URL()],
                        description="Copy-Paste the full "
                                    "<a href='https://support.discordapp.com/hc/en-us/articles/"
                                    "228383668-Intro-to-Webhooks' class='hooklink' "
                                    "target='_blank'>Discord Webhook</a> URL.")
-    media = SelectField(label='Include Media',
+    everyone = BooleanField(label='Tagging <span class="everyonebkg"><span class="everyone">@everyone</span></span> '
+                                  'on the discord post (make sure the Webhook has enough permissions to do this.)',
+                            default='True')
+    media = SelectField(label='And include this types of Media',
                         choices=[('2', 'Images and Videos/GIFs'), ('1i', 'Images'), ('1g', 'Videos/GIFs'),
-                                 ('0', 'None')])
+                                 ('0', 'None')],
+                        description='Only the selected types of media will be processed and posted to discord.')
     submit = SubmitField('Send')
 
 

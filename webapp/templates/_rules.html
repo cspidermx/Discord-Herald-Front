@@ -16,6 +16,9 @@
             When user <strong class="tweet">@{{ rule.handle }}</strong> <BR>
             Tweets any of this keywords: <code class="words">{{ rule.lookfor }}</code> <BR>
             Post to Discord using this webhook: <span class="hook">{{ rule.hook_name() }}</span> <BR>
+            {% if rule.evrone %}
+                Tagging <span class="everyonebkg"><span class="everyone">@everyone</span></span> <BR>
+            {% endif %}
             Including: <span class="tweet">{{ media[rule.media] }}</span> <BR>
         <!--</pre>-->
     </div>

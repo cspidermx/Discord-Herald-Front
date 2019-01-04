@@ -116,7 +116,7 @@ def favicon():
 def index(editid):
     s = readstatus()
     frmss = AddEditRule()
-    rls = Rules.query.filter_by(id_user=current_user.id).order_by(Rules.id.desc()).all()
+    rls = Rules.query.filter_by(id_user=current_user.id).order_by(Rules.id.asc()).all()
     if editid is not None and not frmss.submit.data:
         if editid != "#" and editid != 'favicon.ico':
             ruletoedit = Rules.query.filter_by(id=int(id_unscrambler(editid))).first()
@@ -125,13 +125,15 @@ def index(editid):
             frmss.lookfor.data = ruletoedit.lookfor
             frmss.hook.data = ruletoedit.discrobot
             frmss.media.data = ruletoedit.media
+            frmss.everyone.data = ruletoedit.evrone
     if frmss.validate_on_submit():
         if frmss.ruleid.data == "":
             newrule = Rules(id_user=current_user.id,
                             handle=str(frmss.twitterhandle.data).replace('@', '').strip(),
                             lookfor=frmss.lookfor.data.strip(),
                             discrobot=frmss.hook.data.strip(),
-                            media=frmss.media.data)
+                            media=frmss.media.data,
+                            evrone=frmss.everyone.data)
             newrule.new_id()
             lock(True)
             wappdb.session.add(newrule)
@@ -147,6 +149,7 @@ def index(editid):
             ruletoedit.lookfor = frmss.lookfor.data.strip()
             ruletoedit.discrobot = frmss.hook.data.strip()
             ruletoedit.media = frmss.media.data
+            ruletoedit.evrone = frmss.everyone.data
             print(wappdb.session.commit())
             lock(False)
         return redirect(url_for('index'))

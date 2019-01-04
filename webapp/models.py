@@ -44,6 +44,7 @@ class Rules(wappdb.Model):
     lookfor = wappdb.Column(wappdb.String)
     discrobot = wappdb.Column(wappdb.String)
     media = wappdb.Column(wappdb.String)
+    evrone = wappdb.Column(wappdb.Boolean)
 
     def enc_id(self):
         return encript_id(self.id)
