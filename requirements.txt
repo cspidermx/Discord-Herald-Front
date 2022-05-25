@@ -19,7 +19,7 @@ psycopg2-binary==2.8.4
 pyasn1==0.4.7
 pycparser==2.19
 pycryptodome==3.9.0
-PyJWT==1.7.1
+PyJWT==2.4.0
 python-dateutil==2.8.0
 python-editor==1.0.4
 pytz==2019.3
